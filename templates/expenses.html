@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expenses | Student Expense</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .filter-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0 0.8rem; }
+    th { text-align: left; padding: 1.2rem; color: var(--text-muted); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td { padding: 1.2rem; background: var(--glass); vertical-align: middle; }
+    tr td:first-child { border-radius: 16px 0 0 16px; border-left: 1px solid var(--glass-border); }
+    tr td:last-child { border-radius: 0 16px 16px 0; border-right: 1px solid var(--glass-border); }
+    tr:hover td { background: var(--input-bg); }
+  </style>
+</head>
+<body>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="/dashboard" class="sidebar-logo">
+      <div class="icon">🎓</div>
+      <span>ExpenseTrack</span>
+    </a>
+
+    <!-- Theme Toggle -->
+    <div class="theme-switch">
+      <div class="toggle-ball"></div>
+      <span style="font-size:0.85rem; font-weight:700;">Theme</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a href="/dashboard" class="nav-link"><i>📊</i> Dashboard</a>
+      <a href="/expenses" class="nav-link active"><i>💸</i> Expenses</a>
+      <a href="/expert" class="nav-link"><i style="color:var(--accent);">⭐</i> Expert Corner</a>
+    </nav>
+    <div style="margin-top:auto; padding:1rem; background:var(--glass); border-radius:20px; border:1px solid var(--glass-border);">
+      <a href="/logout" class="nav-link" style="padding:0.5rem; margin-bottom:0; font-size:0.9rem;"><i>🚪</i> Logout</a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3rem;" class="animate-in">
+      <div>
+        <h1 style="font-size:2.2rem; font-weight:800; letter-spacing:-0.03em;">Manage Expenses</h1>
+        <p style="color:var(--text-muted); margin-top:0.3rem;">Tracking ₹{{ "%.2f"|format(total) }} in total spending.</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ New Transaction</button>
+    </header>
+
+    <!-- Filters -->
+    <div class="card animate-in" style="padding: 1.5rem; margin-bottom: 2.5rem; border-radius: 20px;">
+      <form action="/expenses" method="GET" class="filter-bar">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem; display:block;">Category Filter</label>
+          <select name="category" class="form-input" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            {% for c in categories %}
+              <option value="{{ c.id }}" {% if cat_filter == c.id|string %}selected{% endif %}>{{ c.icon }} {{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem; display:block;">Month Filter</label>
+          <input type="month" name="month" class="form-input" value="{{ month_filter }}" onchange="this.form.submit()">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <a href="/expenses" class="btn" style="background:var(--input-bg); color:var(--text-muted); text-decoration:none; padding:0.9rem 1.5rem;">Clear All</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Expense Table -->
+    <div class="table-container animate-in" style="animation-delay:0.2s;">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description & Category</th>
+            <th>Amount</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in expense_list %}
+            <tr>
+              <td style="font-weight:600; font-size:0.9rem;">{{ e.date }}</td>
+              <td>
+                <div style="display:flex; align-items:center; gap:0.8rem;">
+                  <div style="width:36px; height:36px; border-radius:10px; background:{{ e.color }}15; color:{{ e.color }}; display:flex; align-items:center; justify-content:center; font-size:1rem;">
+                    {{ e.icon or '💰' }}
+                  </div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.95rem;">{{ e.description or 'No description' }}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ e.category }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="font-weight:800; font-size:1.1rem; color:var(--secondary);">-₹{{ "%.2f"|format(e.amount) }}</td>
+              <td style="text-align:right;">
+                <form action="{{ url_for('delete_expense', expense_id=e.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" style="background:none; border:none; padding:0.5rem; cursor:pointer; color:var(--secondary); opacity:0.6; transition:0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6" onclick="return confirm('Delete this expense?')">
+                    🗑️
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="4" style="text-align:center; padding:4rem; color:var(--text-muted);">No transactions found matching your filters.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- Simple Modal (Add Expense) -->
+<div id="addExpenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); z-index:1000; align-items:center; justify-content:center;">
+  <div class="card" style="max-width:450px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+      <h2 style="font-weight:800;">💸 Add Expense</h2>
+      <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <form action="/expenses/add" method="POST">
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:0.8rem; font-weight:700; display:block; margin-bottom:0.5rem;">Amount (₹)</label>
+        <input type="number" name="amount" class="form-input" step="0.01" required>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:0.8rem; font-weight:700; display:block; margin-bottom:0.5rem;">Category</label>
+        <select name="category_id" class="form-input" required>
+          {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.icon }} {{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-size:0.8rem; font-weight:700; display:block; margin-bottom:0.5rem;">Description</label>
+        <input type="text" name="description" class="form-input">
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-size:0.8rem; font-weight:700; display:block; margin-bottom:0.5rem;">Date</label>
+        <input type="date" name="date" class="form-input" value="{{ 'now'|today_date }}">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Save Transaction</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal() { document.getElementById('addExpenseModal').style.display = 'flex'; }
+  function closeModal() { document.getElementById('addExpenseModal').style.display = 'none'; }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expert Corner | Student Expense</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="/dashboard" class="sidebar-logo">
+      <div class="icon">🎓</div>
+      <span>ExpenseTrack</span>
+    </a>
+
+     <!-- Theme Toggle -->
+     <div class="theme-switch">
+      <div class="toggle-ball"></div>
+      <span style="font-size:0.85rem; font-weight:700;">Theme</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a href="/dashboard" class="nav-link">
+        <i>📊</i> Dashboard
+      </a>
+      <a href="/expenses" class="nav-link">
+        <i>💸</i> Expenses
+      </a>
+      <a href="/expert" class="nav-link active">
+        <i style="color:var(--accent);">⭐</i> Expert Corner
+      </a>
+    </nav>
+    
+    <div style="margin-top:auto; padding:1rem; background:var(--glass); border-radius:20px; border:1px solid var(--glass-border);">
+      <a href="/logout" class="nav-link" style="padding:0.5rem; margin-bottom:0; font-size:0.9rem;">
+        <i>🚪</i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <header style="margin-bottom:4rem;" class="animate-in">
+      <h1 class="text-gradient-indigo" style="font-size:3rem; font-weight:800; letter-spacing:-0.04em;">Expert Corner</h1>
+      <p style="color:var(--text-muted); font-size:1.1rem; max-width:600px; line-height:1.6; margin-top:1rem;">
+        Mastering your money is a habit, not a math problem. Here is curated wisdom from the world's best financial experts to help you build a wealthy future.
+      </p>
+    </header>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:2.5rem;">
+      {% for tip in tips %}
+        <div class="card animate-in" style="border-top: 5px solid {{ tip.color }}; animation-delay: {{ loop.index0 * 0.15 }}s;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
+            <div>
+              <span style="font-size:0.75rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:{{ tip.color }};">
+                {{ tip.book }}
+              </span>
+              <h2 style="font-size:1.4rem; font-weight:800; margin-top:0.4rem;">{{ tip.tip }}</h2>
+            </div>
+            <div style="font-size:1.5rem;">💡</div>
+          </div>
+          <p style="color:var(--text-muted); line-height:1.7; font-size:1.05rem; margin-bottom:2rem;">
+            "{{ tip.content }}"
+          </p>
+          <div style="padding-top:1.5rem; border-top:1px solid var(--glass-border); display:flex; align-items:center; gap:0.8rem;">
+            <div style="width:32px; height:32px; border-radius:50%; background:{{ tip.color }}33; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">
+              ✍️
+            </div>
+            <span style="font-size:0.9rem; font-weight:600; color:var(--text-muted);">— {{ tip.author }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Rule Sections Container -->
+    <section style="margin-top:5rem;" class="animate-in">
+      <div class="card" style="background:linear-gradient(to right, var(--grad-1), transparent); border:1px solid var(--primary)33;">
+        <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">The Student's "No-Brainer" Rules</h2>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:2rem;">
+          <div>
+            <h4 style="color:var(--primary); margin-bottom:0.5rem; font-size:1.1rem;">1. Track Everything</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem;">What gets measured gets managed. Using this app is your first step to financial freedom.</p>
+          </div>
+          <div>
+            <h4 style="color:var(--secondary); margin-bottom:0.5rem; font-size:1.1rem;">2. Pay Yourself First</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Put 10% of any income into savings before you spend a single rupee on food or fun.</p>
+          </div>
+          <div>
+            <h4 style="color:var(--success); margin-bottom:0.5rem; font-size:1.1rem;">3. Delay Large Purchases</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Wait 24 hours before buying anything over ₹500. Most impulses fade by then.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

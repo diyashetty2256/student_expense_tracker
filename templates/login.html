@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Student Expense Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-size: cover;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 450px;
+      padding: 1rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 1.2rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid var(--glass-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.3s;
+    }
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+<div class="login-container animate-in">
+  
+  <div style="text-align:center; margin-bottom:2.5rem;">
+    <div style="font-size:3rem; display:inline-block; margin-bottom:1rem;">🎓</div>
+    <h1 style="font-weight:800; font-size:2.2rem; letter-spacing:-0.03em;">ExpenseTrack</h1>
+    <p style="color:var(--text-muted);">Manage your gold like an expert.</p>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div style="display:flex;">
+      <button id="loginTab" class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button id="registerTab" class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <div style="padding:2.5rem;">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding:1rem; margin-bottom:1rem; border-radius:12px; border:1px solid rgba(244,63,94,0.2); background:rgba(244,63,94,0.05); color:var(--secondary); font-size:0.9rem;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Login Form -->
+      <form id="loginForm" action="/login" method="POST">
+        <div style="margin-bottom:1.5rem;">
+          <input type="email" name="email" class="form-input" placeholder="Email address" required>
+        </div>
+        <div style="margin-bottom:2rem;">
+          <input type="password" name="password" class="form-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Sign In</button>
+      </form>
+
+      <!-- Register Form (Hidden) -->
+      <form id="registerForm" action="/register" method="POST" style="display:none;">
+        <div style="margin-bottom:1.2rem;">
+          <input type="text" name="name" class="form-input" placeholder="Full Name" required>
+        </div>
+        <div style="margin-bottom:1.2rem;">
+          <input type="email" name="email" class="form-input" placeholder="Email address" required>
+        </div>
+        <div style="margin-bottom:2rem;">
+          <input type="password" name="password" class="form-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:2.5rem;">
+    <div class="theme-switch" style="display:inline-flex; width:auto; padding:0.6rem 1.2rem;">
+      <div class="toggle-ball"></div>
+      <span style="font-size:0.8rem; font-weight:700;">Theme</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    if (tab === 'login') {
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginTab').classList.add('active');
+      document.getElementById('registerTab').classList.remove('active');
+    } else {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').style.display = 'block';
+      document.getElementById('loginTab').classList.remove('active');
+      document.getElementById('registerTab').classList.add('active');
+    }
+  }
+</script>
+
+</body>
+</html>

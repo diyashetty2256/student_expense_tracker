@@ -2,6 +2,10 @@ import mysql.connector
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'student_expense_secret_2024'
@@ -12,13 +16,13 @@ def today_date_filter(s):
     return date.today().isoformat()
 
 # ─────────────────────────────────────────────
-#  MySQL Configuration  –  edit these values!
+#  MySQL Configuration  –  from environment variables
 # ─────────────────────────────────────────────
 DB_CONFIG = {
-    'host':     'localhost',
-    'user':     'root',        # your MySQL username
-    'password': 'Student12@',  # your MySQL password
-    'database': 'expense_tracker'
+    'host':     os.getenv('DB_HOST', 'localhost'),
+    'user':     os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('DB_NAME', 'expense_tracker')
 }
 
 
